@@ -9,7 +9,6 @@
 use crate::prelude::*;
 use crate::runtime::{PyAsyncContext, PyCallback};
 
-use async_trait::async_trait;
 use cocoindex_utils::batching::{BatchQueue, Batcher, BatchingOptions, Runner};
 use pyo3_async_runtimes::tokio::future_into_py;
 
@@ -44,7 +43,6 @@ pub struct PyRunner {
     async_ctx: PyAsyncContext,
 }
 
-#[async_trait]
 impl Runner for PyRunner {
     type Input = Py<PyAny>;
     type Output = Py<PyAny>;

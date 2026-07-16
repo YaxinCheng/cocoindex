@@ -524,11 +524,11 @@ impl Drop for SingleWatcherToken<'_> {
 
 /// A watch-only change feed (e.g. a Kafka topic): it can stream changes to a
 /// subscriber but has no scannable snapshot. Requires live mode.
-#[async_trait]
 pub trait LiveMapFeed<K, V>: Send + Sync + 'static {
     /// Stream changes to `subscriber` until cancelled. Call
     /// [`LiveMapSubscriber::mark_ready`] once caught up.
-    async fn watch(&self, subscriber: LiveMapSubscriber<K, V>) -> Result<()>;
+    fn watch(&self, subscriber: LiveMapSubscriber<K, V>)
+    -> impl Future<Output = Result<()>> + Send;
 
     /// Whether the framework should skip the initial catch-up scan
     /// (`update_full`) before [`watch`](LiveMapFeed::watch). Defaults to `false`
@@ -540,18 +540,20 @@ pub trait LiveMapFeed<K, V>: Send + Sync + 'static {
     /// analogue of the OCI source's `logic_version` skip-scan. When it returns
     /// `true`, `watch()` must process the replayed backlog itself rather than
     /// relying on a scan to cover it.
-    async fn skip_initial_scan(&self, _operator: &LiveComponentOperator) -> Result<bool> {
-        Ok(false)
+    fn skip_initial_scan(
+        &self,
+        _operator: &LiveComponentOperator,
+    ) -> impl Future<Output = Result<bool>> + Send {
+        async { Ok(false) }
     }
 }
 
 /// A change feed that also has a scannable current state (e.g. a local
 /// directory): usable in both catch-up and live modes.
-#[async_trait]
 pub trait LiveMapView<K, V>: LiveMapFeed<K, V> {
     /// All current `(key, value)` pairs. Used for the catch-up full pass and
     /// whenever [`LiveMapSubscriber::update_all`] triggers a re-scan.
-    async fn scan(&self) -> Result<Vec<(K, V)>>;
+    fn scan(&self) -> impl std::future::Future<Output = Result<Vec<(K, V)>>> + Send;
 }
 
 /// Internal `LiveComponent` that adapts a [`LiveMapView`] to the operator API,

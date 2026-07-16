@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use hashlink::LinkedHashMap;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex, Weak};
@@ -9,15 +8,14 @@ use tracing::{Instrument, Span, error};
 use crate::error::{Error, Result};
 use crate::internal_bail;
 
-#[async_trait]
 pub trait Runner: Send + Sync {
     type Input: Send;
     type Output: Send;
 
-    async fn run(
+    fn run(
         &self,
         inputs: Vec<Self::Input>,
-    ) -> Result<impl ExactSizeIterator<Item = Self::Output>>;
+    ) -> impl Future<Output = Result<impl ExactSizeIterator<Item = Self::Output>>> + Send;
 }
 
 /// Entry for a pending batch in the queue.
@@ -317,7 +315,6 @@ mod tests {
         recorded_calls: Arc<Mutex<Vec<Vec<i64>>>>,
     }
 
-    #[async_trait]
     impl Runner for TestRunner {
         type Input = (i64, oneshot::Receiver<()>);
         type Output = i64;

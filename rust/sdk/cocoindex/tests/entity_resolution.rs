@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
 
-use async_trait::async_trait;
 use cocoindex::{
     CanonicalSide, EntityEmbedder, ExistingCanonicalPolicy, PairDecision, PairResolver,
     ResolutionEvent, ResolveOptions, resolve_entities, resolve_entities_with_events,
@@ -12,7 +11,6 @@ struct ScriptedEmbedder {
     vectors: HashMap<String, Vec<f32>>,
 }
 
-#[async_trait]
 impl EntityEmbedder for ScriptedEmbedder {
     async fn embed_entity(&self, entity: &str) -> cocoindex::Result<Vec<f32>> {
         self.vectors
@@ -28,7 +26,6 @@ struct ScriptedResolver {
     calls: Mutex<Vec<(String, Vec<String>)>>,
 }
 
-#[async_trait]
 impl PairResolver for ScriptedResolver {
     async fn resolve_pair(
         &self,

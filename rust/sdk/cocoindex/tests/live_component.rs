@@ -514,14 +514,12 @@ struct MemView {
     items: Vec<(String, i64)>,
 }
 
-#[async_trait]
 impl LiveMapFeed<String, i64> for MemView {
     async fn watch(&self, _subscriber: LiveMapSubscriber<String, i64>) -> Result<()> {
         Ok(())
     }
 }
 
-#[async_trait]
 impl LiveMapView<String, i64> for MemView {
     async fn scan(&self) -> Result<Vec<(String, i64)>> {
         Ok(self.items.clone())
@@ -568,7 +566,6 @@ struct StreamFeed {
     done: Arc<Notify>,
 }
 
-#[async_trait]
 impl LiveMapFeed<String, i64> for StreamFeed {
     async fn watch(&self, subscriber: LiveMapSubscriber<String, i64>) -> Result<()> {
         subscriber.mark_ready().await;
@@ -580,7 +577,6 @@ impl LiveMapFeed<String, i64> for StreamFeed {
     }
 }
 
-#[async_trait]
 impl LiveMapView<String, i64> for StreamFeed {
     async fn scan(&self) -> Result<Vec<(String, i64)>> {
         // Empty initial snapshot; everything arrives via watch().

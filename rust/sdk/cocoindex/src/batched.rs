@@ -24,7 +24,6 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
-use async_trait::async_trait;
 use cocoindex_utils::batching::{BatchQueue, Batcher, BatchingOptions, Runner};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -41,7 +40,6 @@ struct FnRunner<In, Out> {
     f: BatchFn<In, Out>,
 }
 
-#[async_trait]
 impl<In: Send + 'static, Out: Send + 'static> Runner for FnRunner<In, Out> {
     type Input = In;
     type Output = Out;

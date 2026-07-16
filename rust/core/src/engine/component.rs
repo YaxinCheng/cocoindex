@@ -1319,7 +1319,6 @@ mod tests {
 
     struct NoopSink;
 
-    #[async_trait]
     impl TargetActionSink<TestProfile> for NoopSink {
         async fn apply(
             &self,

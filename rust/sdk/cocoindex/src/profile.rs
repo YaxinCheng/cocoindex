@@ -5,7 +5,6 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
-use async_trait::async_trait;
 use cocoindex_core::engine::component::{ComponentProcessor, ComponentProcessorInfo};
 use cocoindex_core::engine::context::ComponentProcessorContext;
 use cocoindex_core::engine::profile::{EngineProfile, Persist};
@@ -270,7 +269,6 @@ impl BoxedSink {
     }
 }
 
-#[async_trait]
 impl TargetActionSink<RustProfile> for BoxedSink {
     async fn apply(
         &self,

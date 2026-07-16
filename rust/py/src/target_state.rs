@@ -54,7 +54,6 @@ fn get_core_field(py: Python<'_>, obj: Py<PyAny>) -> PyResult<Py<PyAny>> {
     Ok(core_py)
 }
 
-#[async_trait]
 impl TargetActionSink<PyEngineProfile> for PyTargetActionSinkInner {
     async fn apply(
         &self,

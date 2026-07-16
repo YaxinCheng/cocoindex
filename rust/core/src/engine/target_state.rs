@@ -18,19 +18,18 @@ pub struct ChildTargetDef<Prof: EngineProfile> {
     pub handler: Prof::TargetHdl,
 }
 
-#[async_trait]
 pub trait TargetActionSink<Prof: EngineProfile>: Send + Sync + 'static {
     // TODO: Add method to expose function info and arguments, for tracing purpose & no-change detection.
 
     /// Run the logic to apply the action.
     ///
     /// We expect the implementation of this method to spawn the logic to a separate thread or task when needed.
-    async fn apply(
+    fn apply(
         &self,
         host_runtime_ctx: &Prof::HostRuntimeCtx,
         host_ctx: Arc<Prof::HostCtx>,
         actions: Vec<Prof::TargetAction>,
-    ) -> Result<Option<Vec<Option<ChildTargetDef<Prof>>>>>;
+    ) -> impl std::future::Future<Output = Result<Option<Vec<Option<ChildTargetDef<Prof>>>>>> + Send;
 }
 
 /// Cloneable handle to a target action sink and its per-sink batcher.
@@ -122,7 +121,6 @@ struct TargetActionRunner<Prof: EngineProfile> {
     sink: Arc<Prof::TargetActionSink>,
 }
 
-#[async_trait]
 impl<Prof: EngineProfile> Runner for TargetActionRunner<Prof> {
     type Input = TargetActionRunnerInput<Prof>;
     type Output = Option<Vec<Option<ChildTargetDef<Prof>>>>;

@@ -214,7 +214,6 @@ impl TxnRunner {
     }
 }
 
-#[async_trait]
 impl Runner for TxnRunner {
     type Input = TxnBody;
     type Output = Box<dyn Any + Send>;

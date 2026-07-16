@@ -23,7 +23,6 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
-use async_trait::async_trait;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -144,7 +143,6 @@ impl<V: LiveMapValue> LiveMap<V> {
     }
 }
 
-#[async_trait]
 impl<V: LiveMapValue> LiveMapView<String, V> for LiveMap<V> {
     async fn scan(&self) -> Result<Vec<(String, V)>> {
         let entries = self.inner.entries.lock().unwrap();
@@ -155,7 +153,6 @@ impl<V: LiveMapValue> LiveMapView<String, V> for LiveMap<V> {
     }
 }
 
-#[async_trait]
 impl<V: LiveMapValue> LiveMapFeed<String, V> for LiveMap<V> {
     async fn watch(&self, subscriber: LiveMapSubscriber<String, V>) -> Result<()> {
         let mut rx =

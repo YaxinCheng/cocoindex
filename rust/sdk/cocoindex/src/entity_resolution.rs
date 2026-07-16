@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
-use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
@@ -104,14 +103,19 @@ impl ResolvedEntities {
     }
 }
 
-#[async_trait]
 pub trait EntityEmbedder {
-    async fn embed_entity(&self, entity: &str) -> Result<Vec<f32>>;
+    fn embed_entity(
+        &self,
+        entity: &str,
+    ) -> impl std::future::Future<Output = Result<Vec<f32>>> + Send;
 }
 
-#[async_trait]
 pub trait PairResolver {
-    async fn resolve_pair(&self, entity: &str, candidates: &[String]) -> Result<PairDecision>;
+    fn resolve_pair(
+        &self,
+        entity: &str,
+        candidates: &[String],
+    ) -> impl std::future::Future<Output = Result<PairDecision>> + Send;
 }
 
 #[derive(Clone, Debug)]

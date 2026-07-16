@@ -11,7 +11,6 @@
 //! [`VectorElementType`] enum, which covers the element types the connectors
 //! support today (`f32` and `f16`).
 
-use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
@@ -56,14 +55,12 @@ impl VectorSchema {
 /// Something that can describe the vector column it produces — typically an
 /// embedder. Implemented by [`VectorSchema`] itself so a fixed schema can be
 /// passed wherever a provider is expected.
-#[async_trait]
 pub trait VectorSchemaProvider: Send + Sync {
     /// Resolve the vector schema (may perform I/O, e.g. a probe embedding to
     /// discover the dimension).
-    async fn vector_schema(&self) -> Result<VectorSchema>;
+    fn vector_schema(&self) -> impl Future<Output = Result<VectorSchema>> + Send;
 }
 
-#[async_trait]
 impl VectorSchemaProvider for VectorSchema {
     async fn vector_schema(&self) -> Result<VectorSchema> {
         Ok(*self)
@@ -81,13 +78,11 @@ pub struct MultiVectorSchema {
 
 /// Something that can describe the multi-vector column it produces.
 /// Implemented by [`MultiVectorSchema`] itself.
-#[async_trait]
 pub trait MultiVectorSchemaProvider: Send + Sync {
     /// Resolve the multi-vector schema.
-    async fn multi_vector_schema(&self) -> Result<MultiVectorSchema>;
+    fn multi_vector_schema(&self) -> impl Future<Output = Result<MultiVectorSchema>> + Send;
 }
 
-#[async_trait]
 impl MultiVectorSchemaProvider for MultiVectorSchema {
     async fn multi_vector_schema(&self) -> Result<MultiVectorSchema> {
         Ok(*self)
